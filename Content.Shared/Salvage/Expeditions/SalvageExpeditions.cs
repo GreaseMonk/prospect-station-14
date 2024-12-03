@@ -72,7 +72,7 @@ public sealed partial class SalvageExpeditionDataComponent : Component
     /// Is there an active salvage expedition.
     /// </summary>
     [ViewVariables]
-    public bool Claimed => ActiveMission != 0;
+    public bool Claimed => false;
 
     /// <summary>
     /// Are we actively cooling down from the last salvage mission.
