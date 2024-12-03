@@ -1,4 +1,5 @@
 using System.Numerics;
+using Robust.Shared.Audio; // Prospect
 
 namespace Content.Server.Shuttles.Components
 {
@@ -70,5 +71,12 @@ namespace Content.Server.Shuttles.Components
 
         [DataField("angularDamping"), ViewVariables(VVAccess.ReadWrite)]
         public float AngularDamping = 0.05f;
+
+        // Prospect: Added to support errors when trying to FTL
+        /// <summary>
+        /// The sound that plays when a FTL error has occurred.
+        /// </summary>
+        [DataField]
+        public SoundSpecifier DenySound = new SoundPathSpecifier("/Audio/Effects/Cargo/buzz_sigh.ogg");
     }
 }

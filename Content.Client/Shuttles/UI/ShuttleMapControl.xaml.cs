@@ -116,34 +116,39 @@ public sealed partial class ShuttleMapControl : BaseShuttleControl
 
                 var mapTransform = Matrix3Helpers.CreateInverseTransform(Offset, Angle.Zero);
 
-                if (beaconsOnly && TryGetBeacon(_beacons, mapTransform, args.RelativePixelPosition, PixelRect, out var foundBeacon, out _))
+                var mousePos = _inputs.MouseScreenPosition; // Prospect
+                var mouseLocalPos = GetLocalPosition(mousePos); // Prospect
+
+                if (beaconsOnly && TryGetBeacon(_beacons, mapTransform, mouseLocalPos, PixelRect, out var foundBeacon, out _))  // Prospect: only allow warp to expeds
                 {
                     RequestBeaconFTL?.Invoke(foundBeacon.Entity, _ftlAngle);
                 }
-                else
-                {
-                    // We'll send the "adjusted" position and server will adjust it back when relevant.
-                    var mapCoords = new MapCoordinates(InverseMapPosition(args.RelativePosition), ViewingMap);
-                    RequestFTL?.Invoke(mapCoords, _ftlAngle);
-                }
+                // Prospect: only allow warp to expeds
+                // else
+                // {
+                //     // We'll send the "adjusted" position and server will adjust it back when relevant.
+                //     var mapCoords = new MapCoordinates(InverseMapPosition(args.RelativePosition), ViewingMap);
+                //     RequestFTL?.Invoke(mapCoords, _ftlAngle);
+                // }
             }
         }
 
         base.KeyBindUp(args);
     }
 
-    protected override void MouseWheel(GUIMouseWheelEventArgs args)
-    {
-        // Scroll handles FTL rotation if you're in FTL mode.
-        if (FtlMode)
-        {
-            _ftlAngle += Angle.FromDegrees(15f) * args.Delta.Y;
-            _ftlAngle = _ftlAngle.Reduced();
-            return;
-        }
-
-        base.MouseWheel(args);
-    }
+    // Prospect: Disable rotation when selecting FTL destination because its kinda jank.
+    // protected override void MouseWheel(GUIMouseWheelEventArgs args)
+    // {
+    //     // Scroll handles FTL rotation if you're in FTL mode.
+    //     if (FtlMode)
+    //     {
+    //         _ftlAngle += Angle.FromDegrees(15f) * args.Delta.Y;
+    //         _ftlAngle = _ftlAngle.Reduced();
+    //         return;
+    //     }
+    //
+    //     base.MouseWheel(args);
+    // }
 
     private void DrawParallax(DrawingHandleScreen handle)
     {
@@ -451,7 +456,7 @@ public sealed partial class ShuttleMapControl : BaseShuttleControl
 
                     // Draw line from our shuttle to target
                     // Might need to clip the line if it's too far? But my brain wasn't working so F.
-                    handle.DrawDottedLine(gridUiPos, mouseLocalPos, color, (float) realTime.TotalSeconds * 30f);
+                    //handle.DrawDottedLine(gridUiPos, mouseLocalPos, color, (float) realTime.TotalSeconds * 30f); // Prospect: Disable the line.
 
                     // Draw shuttle pre-vis
                     var mouseVerts = GetMapObject(mouseLocalPos, _ftlAngle, scale: MinimapScale);

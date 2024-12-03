@@ -130,7 +130,8 @@ public sealed partial class ShuttleConsoleSystem
         // Check shuttle can even FTL
         if (!_shuttle.CanFTL(shuttleUid.Value, out var reason))
         {
-            // TODO: Session popup
+            _popup.PopupEntity(reason, consoleUid.Value); // Prospect: Show errors when trying to FTL
+            _audio.PlayPvs(shuttleComp.DenySound, consoleUid.Value); // Prospect: Show errors when trying to FTL
             return;
         }
 
