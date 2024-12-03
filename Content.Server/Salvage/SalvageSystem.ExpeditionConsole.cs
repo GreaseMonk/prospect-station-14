@@ -53,45 +53,46 @@ public sealed partial class SalvageSystem
         if (!data.Missions.TryGetValue(args.Index, out var missionparams))
             return;
 
+        // Prospect: we can only ftl with disks so no longer need to check for mass
         // Frontier: FTL travel is currently restricted to expeditions and such, and so we need to put this here
         // until FTL changes for us in some way.
-        if (!component.Debug) // Skip the test
-        {
-            if (!TryComp<StationDataComponent>(station, out var stationData))
-                return;
-            if (_station.GetLargestGrid(stationData) is not { Valid: true } grid)
-                return;
-            if (!TryComp<MapGridComponent>(grid, out var gridComp))
-                return;
-
-            var xform = Transform(grid);
-            var bounds = xform.WorldMatrix.TransformBox(gridComp.LocalAABB).Enlarged(ShuttleFTLRange);
-            var bodyQuery = GetEntityQuery<PhysicsComponent>();
-            foreach (var other in _mapManager.FindGridsIntersecting(xform.MapID, bounds))
-            {
-                if (grid == other.Owner ||
-                    !bodyQuery.TryGetComponent(other.Owner, out var body) ||
-                    body.Mass < ShuttleFTLMassThreshold)
-                {
-                    continue;
-                }
-
-                PlayDenySound(uid, component);
-                _popupSystem.PopupEntity(Loc.GetString("shuttle-ftl-proximity"), uid, PopupType.MediumCaution);
-                UpdateConsoles(station.Value, data);
-                return;
-            }
-            // end of Frontier proximity check
-
-            // Frontier: check for FTL component - if one exists, the station won't be taken into FTL.
-            if (HasComp<FTLComponent>(grid))
-            {
-                PlayDenySound(uid, component);
-                _popupSystem.PopupEntity(Loc.GetString("shuttle-ftl-recharge"), uid, PopupType.MediumCaution);
-                UpdateConsoles(station.Value, data); // Sure, why not?
-                return;
-            }
-        }
+        // if (!component.Debug) // Skip the test
+        // {
+        //     if (!TryComp<StationDataComponent>(station, out var stationData))
+        //         return;
+        //     if (_station.GetLargestGrid(stationData) is not { Valid: true } grid)
+        //         return;
+        //     if (!TryComp<MapGridComponent>(grid, out var gridComp))
+        //         return;
+        //
+        //     var xform = Transform(grid);
+        //     var bounds = xform.WorldMatrix.TransformBox(gridComp.LocalAABB).Enlarged(ShuttleFTLRange);
+        //     var bodyQuery = GetEntityQuery<PhysicsComponent>();
+        //     foreach (var other in _mapManager.FindGridsIntersecting(xform.MapID, bounds))
+        //     {
+        //         if (grid == other.Owner ||
+        //             !bodyQuery.TryGetComponent(other.Owner, out var body) ||
+        //             body.Mass < ShuttleFTLMassThreshold)
+        //         {
+        //             continue;
+        //         }
+        //
+        //         PlayDenySound(uid, component);
+        //         _popupSystem.PopupEntity(Loc.GetString("shuttle-ftl-proximity"), uid, PopupType.MediumCaution);
+        //         UpdateConsoles(station.Value, data);
+        //         return;
+        //     }
+        //     // end of Frontier proximity check
+        //
+        //     // Frontier: check for FTL component - if one exists, the station won't be taken into FTL.
+        //     if (HasComp<FTLComponent>(grid))
+        //     {
+        //         PlayDenySound(uid, component);
+        //         _popupSystem.PopupEntity(Loc.GetString("shuttle-ftl-recharge"), uid, PopupType.MediumCaution);
+        //         UpdateConsoles(station.Value, data); // Sure, why not?
+        //         return;
+        //     }
+        // }
         // End Frontier
 
         // Frontier  change - disable coordinate disks for expedition missions
