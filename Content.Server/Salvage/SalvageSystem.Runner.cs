@@ -208,8 +208,8 @@ public sealed partial class SalvageSystem
 
                 if (TryComp<StationDataComponent>(comp.Station, out var data))
                 {
-                    foreach (var member in data.Grids)
-                    {
+                    // foreach (var member in data.Grids) // Prospect
+                    // {
                         while (shuttleQuery.MoveNext(out var shuttleUid, out var shuttle, out var shuttleXform))
                         {
                             if (shuttleXform.MapUid != uid || HasComp<FTLComponent>(shuttleUid))
@@ -263,7 +263,7 @@ public sealed partial class SalvageSystem
                         }
 
                         break;
-                    }
+                    //}  // Prospect
                 }
             }
 

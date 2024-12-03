@@ -202,22 +202,7 @@ public sealed class SpawnSalvageMissionJob : Job<bool>
         expedition.Difficulty = _missionParams.Difficulty;
         expedition.Rewards = mission.Rewards;
 
-        // On Frontier, we cant share our locations it breaks ftl in a bad bad way
-        // Don't want consoles to have the incorrect name until refreshed.
-        /*var ftlUid = _entManager.CreateEntityUninitialized("FTLPoint", new EntityCoordinates(mapUid, grid.TileSizeHalfVector));
-        _metaData.SetEntityName(ftlUid, SharedSalvageSystem.GetFTLName(_prototypeManager.Index<DatasetPrototype>("names_borer"), _missionParams.Seed));
-        _entManager.InitializeAndStartEntity(ftlUid);*/
-
-        // so we just gunna yeet them there instead why not. they chose this life.
-        /*var stationData = _entManager.GetComponent<StationDataComponent>(Station);
-        var shuttleUid = _stationSystem.GetLargestGrid(stationData);
-        if (shuttleUid is { Valid : true } vesselUid)
-        {
-            var shuttle = _entManager.GetComponent<ShuttleComponent>(vesselUid);
-            _shuttle.FTLToCoordinates(vesselUid, shuttle, new EntityCoordinates(mapUid, Vector2.Zero), 0f, 5.5f, 50f);
-        }*/
-
-        var landingPadRadius = 4; // Frontier: 24<4 - using this as a margin (4-16), not a radius
+        var landingPadRadius = 24; // Prospect:  frontier sets this to 4, we set it back to 24 which is ss14 default
         var minDungeonOffset = landingPadRadius + 4;
 
         // We'll use the dungeon rotation as the spawn angle
@@ -225,28 +210,26 @@ public sealed class SpawnSalvageMissionJob : Job<bool>
 
         Dungeon dungeon = default!; // Frontier: explicitly type as Dungeon
 
-        Vector2 dungeonOffset = new Vector2(); // Frontier: needed for dungeon offset
-        if (config != SalvageMissionType.Mining) // Frontier: why?
+        // Prospect: START: Reverted this code back to how it is in SS14
+        var maxDungeonOffset = minDungeonOffset + 12;
+        var dungeonOffsetDistance = minDungeonOffset + (maxDungeonOffset - minDungeonOffset) * random.NextFloat();
+        var dungeonOffset = new Vector2(0f, dungeonOffsetDistance);
+        dungeonOffset = dungeonRotation.RotateVec(dungeonOffset);
+        var dungeonMod = _prototypeManager.Index<SalvageDungeonModPrototype>(mission.Dungeon);
+        var dungeonConfig = _prototypeManager.Index(dungeonMod.Proto);
+        var dungeons = await WaitAsyncTask(_dungeon.GenerateDungeonAsync(dungeonConfig, dungeonConfig.ID, mapUid, grid, (Vector2i) dungeonOffset, // Frontier: add dungeonConfig.ID
+                _missionParams.Seed));
+
+        dungeon = dungeons.First();
+
+        // Aborty
+        if (dungeon.Rooms.Count == 0)
         {
-            var maxDungeonOffset = minDungeonOffset + 12;
-            var dungeonOffsetDistance = minDungeonOffset + (maxDungeonOffset - minDungeonOffset) * random.NextFloat();
-            dungeonOffset = new Vector2(0f, dungeonOffsetDistance);
-            dungeonOffset = dungeonRotation.RotateVec(dungeonOffset);
-            var dungeonMod = _prototypeManager.Index<SalvageDungeonModPrototype>(mission.Dungeon);
-            var dungeonConfig = _prototypeManager.Index(dungeonMod.Proto);
-            var dungeons = await WaitAsyncTask(_dungeon.GenerateDungeonAsync(dungeonConfig, dungeonConfig.ID, mapUid, grid, (Vector2i) dungeonOffset, // Frontier: add dungeonConfig.ID
-                    _missionParams.Seed));
-
-            dungeon = dungeons.First();
-
-            // Aborty
-            if (dungeon.Rooms.Count == 0)
-            {
-                return false;
-            }
-
-            expedition.DungeonLocation = dungeonOffset;
+            return false;
         }
+
+        expedition.DungeonLocation = dungeonOffset;
+        // Prospect: END: of reverted code
 
         // Frontier: get map bounding box
         Box2 dungeonBox = new Box2(dungeonOffset, dungeonOffset);
@@ -258,27 +241,27 @@ public sealed class SpawnSalvageMissionJob : Job<bool>
         var stationData = _entManager.GetComponent<StationDataComponent>(Station);
 
         // Frontier: get ship bounding box relative to largest grid coords
-        var shuttleUid = _stationSystem.GetLargestGrid(stationData);
-        Box2 shuttleBox = new Box2();
-
-        if (shuttleUid is { Valid: true } vesselUid &&
-            _entManager.TryGetComponent<MapGridComponent>(vesselUid, out var gridComp))
-        {
-            shuttleBox = gridComp.LocalAABB;
-        }
+        // var shuttleUid = _stationSystem.GetLargestGrid(stationData);
+        // Box2 shuttleBox = new Box2();
+        //
+        // if (shuttleUid is { Valid: true } vesselUid &&
+        //     _entManager.TryGetComponent<MapGridComponent>(vesselUid, out var gridComp))
+        // {
+        //     shuttleBox = gridComp.LocalAABB;
+        // }
 
         // Frontier: offset ship spawn point from bounding boxes
-        Vector2 dungeonProjection = new Vector2(dungeonBox.Width * (float) -Math.Sin(dungeonRotation) / 2, dungeonBox.Height * (float) Math.Cos(dungeonRotation) / 2); // Project boxes to get relevant offset for dungeon rotation.
-        Vector2 shuttleProjection = new Vector2(shuttleBox.Width * (float) -Math.Sin(dungeonRotation) / 2, shuttleBox.Height * (float) Math.Cos(dungeonRotation) / 2); // Note: sine is negative because of CCW rotation (starting north, then west)
-        Vector2 coords = dungeonBox.Center - dungeonProjection - dungeonOffset - shuttleProjection - shuttleBox.Center; // Coordinates to spawn the ship at to center it with the dungeon's bounding boxes
-        coords = coords.Rounded(); // Ensure grid is aligned to map coords
+        // Vector2 dungeonProjection = new Vector2(dungeonBox.Width * (float) -Math.Sin(dungeonRotation) / 2, dungeonBox.Height * (float) Math.Cos(dungeonRotation) / 2); // Project boxes to get relevant offset for dungeon rotation.
+        // Vector2 shuttleProjection = new Vector2(shuttleBox.Width * (float) -Math.Sin(dungeonRotation) / 2, shuttleBox.Height * (float) Math.Cos(dungeonRotation) / 2); // Note: sine is negative because of CCW rotation (starting north, then west)
+        // Vector2 coords = dungeonBox.Center - dungeonProjection - dungeonOffset - shuttleProjection - shuttleBox.Center; // Coordinates to spawn the ship at to center it with the dungeon's bounding boxes
+        // coords = coords.Rounded(); // Ensure grid is aligned to map coords
 
         // Frontier: delay ship FTL
-        if (shuttleUid is { Valid: true })
-        {
-            var shuttle = _entManager.GetComponent<ShuttleComponent>(shuttleUid.Value);
-            _shuttle.FTLToCoordinates(shuttleUid.Value, shuttle, new EntityCoordinates(mapUid, coords), 0f, 5.5f, 50f);
-        }
+        // if (shuttleUid is { Valid: true })
+        // {
+        //     var shuttle = _entManager.GetComponent<ShuttleComponent>(shuttleUid.Value);
+        //     _shuttle.FTLToCoordinates(shuttleUid.Value, shuttle, new EntityCoordinates(mapUid, coords), 0f, 5.5f, 50f);
+        // }
 
         List<Vector2i> reservedTiles = new();
 

@@ -12,7 +12,8 @@ using Content.Shared.Mobs.Components; // Frontier
 using Content.Shared.NPC.Components; // Frontier
 using Content.Shared.IdentityManagement; // Frontier
 using Content.Shared.NPC; // Frontier
-using Content.Server._NF.Salvage; // Frontier
+using Content.Server._NF.Salvage;
+using Content.Shared.Dataset; // Frontier
 
 namespace Content.Server.Salvage;
 
@@ -23,8 +24,8 @@ public sealed partial class SalvageSystem
 
     [Dependency] private readonly SharedPopupSystem _popupSystem = default!;
 
-    private const float ShuttleFTLMassThreshold = 50f;
-    private const float ShuttleFTLRange = 150f;
+    private const float ShuttleFTLMassThreshold = 25f; // Prospect (50 < 25)
+    private const float ShuttleFTLRange = 50f;  // Prospect (150 < 50)
 
     private void OnSalvageClaimMessage(EntityUid uid, SalvageExpeditionConsoleComponent component, ClaimSalvageMessage args)
     {
@@ -94,16 +95,16 @@ public sealed partial class SalvageSystem
         // End Frontier
 
         // Frontier  change - disable coordinate disks for expedition missions
-        //var cdUid = Spawn(CoordinatesDisk, Transform(uid).Coordinates);
-        SpawnMission(missionparams, station.Value, null);
+        var cdUid = Spawn(CoordinatesDisk, Transform(uid).Coordinates);
+        SpawnMission(missionparams, station.Value, cdUid);
 
         data.ActiveMission = args.Index;
         var mission = GetMission(missionparams.MissionType, missionparams.Difficulty, missionparams.Seed);
         data.NextOffer = _timing.CurTime + mission.Duration + TimeSpan.FromSeconds(1);
 
-        // Frontier  change - disable coordinate disks for expedition missions
-        //_labelSystem.Label(cdUid, GetFTLName(_prototypeManager.Index<DatasetPrototype>("names_borer"), missionparams.Seed));
-        //_audio.PlayPvs(component.PrintSound, uid);
+        // Prospect - re-enable coordinate disks for expedition missions - it was disabled on frontier
+        _labelSystem.Label(cdUid, GetFTLName(_prototypeManager.Index<DatasetPrototype>("names_borer"), missionparams.Seed));
+        _audio.PlayPvs(component.PrintSound, uid);
 
         UpdateConsoles(station.Value, data); // Frontier: add station
     }
