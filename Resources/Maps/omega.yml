@@ -33705,14 +33705,6 @@ entities:
     - type: Transform
       pos: 25.5,-17.5
       parent: 4812
-- proto: ComputerSalvageExpedition
-  entities:
-  - uid: 12656
-    components:
-    - type: Transform
-      rot: 1.5707963267948966 rad
-      pos: 22.5,16.5
-      parent: 4812
 - proto: ComputerShuttleCargo
   entities:
   - uid: 2754

@@ -2394,14 +2394,6 @@ entities:
       rot: 1.5707963267948966 rad
       pos: -2.5,9.5
       parent: 1
-- proto: ComputerSalvageExpedition
-  entities:
-  - uid: 67
-    components:
-    - type: Transform
-      rot: -1.5707963267948966 rad
-      pos: 2.5,9.5
-      parent: 1
 - proto: ComputerShuttle
   entities:
   - uid: 403
