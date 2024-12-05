@@ -1,7 +1,7 @@
 ﻿- type: entity
-  id: ProspectSectorGameRule
+  id: PSAdventureGameRule
   parent: Adventure
   categories: [ HideSpawnMenu ]
   components:
-  - type: ProspectSectorGameRule
+  - type: PSAdventureGameRule
 

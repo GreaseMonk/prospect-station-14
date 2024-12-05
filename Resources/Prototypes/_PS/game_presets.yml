@@ -1,12 +1,12 @@
 ﻿- type: gamePreset
-  id: Prospect
+  id: PSAdventureGamePreset
   alias:
-  - prospect
+  - psadventure
   name: prospect-title
   description: prospect-description
   showInVote: false
   rules:
-  - ProspectSectorGameRule
+  - PSAdventureGameRule
   - BasicStationEventScheduler
   - BluespaceEventScheduler
   - BluespaceDungeonEventScheduler
