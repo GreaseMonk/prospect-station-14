@@ -1,0 +1,20 @@
+﻿- type: entity
+  id: StandardProspectStation
+  suffix: DEBUG # TODO: Fix this, its here to stop PrototypeSaveTest fail
+  parent:
+  - BaseStation
+  - BaseStationCargo
+  - BaseStationJobsSpawning
+  - BaseStationRecords
+  - BaseStationAlertLevels
+  - BaseStationSiliconLawFrontierStation
+  - BaseStationSectorNews
+  - BaseStationMail # Mail
+  - BaseStationSectorServices # Hosts all sector-wide services
+  - BaseStationDampening
+  - BaseStationDeadDropHintExempt # No hints
+  - BaseStationRenameWarpPoints
+  - BaseStationExpeditions
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Transform
