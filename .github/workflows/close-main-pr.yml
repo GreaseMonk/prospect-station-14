@@ -1,0 +1,40 @@
+name: Close PRs on master
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+jobs:
+  close-pr:
+    runs-on: ubuntu-latest
+    if: ${{ github.head_ref == 'main' }}
+
+    steps:
+      - name: Check if PR author is in the organization
+        id: check-org
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const org = context.payload.repository.owner.login;
+            const username = context.payload.pull_request.user.login;
+            const result = await github.rest.orgs.checkMembershipForUser({
+              org,
+              username,
+            }).catch(err => {
+              if (err.status === 404) return { isOrgMember: false };
+              throw err;
+            });
+            return result.isOrgMember || false;
+          result-encoding: string
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close PR if author is not in the organization
+        if: steps.check-org.outputs.result == 'false'
+        uses: superbrothers/close-pull-request@v3
+        with:
+          comment: >
+            Thank you for contributing to the Prospect Sector repository. Unfortunately, it looks like you submitted your pull request from the main branch. 
+            We suggest you follow [our git usage documentation](https://docs.spacestation14.com/en/general-development/setup/git-for-the-ss14-developer.html).
+
+            You can move your current work from the main branch to another branch by doing `git branch <branch_name>` and resetting the main branch.
