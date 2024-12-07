@@ -1,0 +1,13 @@
+﻿- type: gamePreset
+  id: PSAdventureGamePreset
+  alias:
+  - psadventure
+  name: prospect-title
+  description: prospect-description
+  showInVote: false
+  rules:
+  - PSAdventureGameRule
+  - BasicStationEventScheduler
+  - BluespaceEventScheduler
+  - BluespaceDungeonEventScheduler
+  - BluespaceSalvageEventScheduler

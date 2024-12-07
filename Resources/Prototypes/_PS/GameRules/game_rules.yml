@@ -1,0 +1,7 @@
+﻿- type: entity
+  id: PSAdventureGameRule
+  parent: Adventure
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: PSAdventureGameRule
+

@@ -163,7 +163,7 @@ namespace Content.Shared.CCVar
         ///     Controls the default game preset.
         /// </summary>
         public static readonly CVarDef<string>
-            GameLobbyDefaultPreset = CVarDef.Create("game.defaultpreset", "adventure", CVar.ARCHIVE); // Frontier: secret<adventure
+            GameLobbyDefaultPreset = CVarDef.Create("game.defaultpreset", "psadventure", CVar.ARCHIVE); // Prospect
 
         /// <summary>
         ///     Controls if the game can force a different preset if the current preset's criteria are not met.
@@ -193,7 +193,7 @@ namespace Content.Shared.CCVar
         ///     Controls the game map prototype to load. SS14 stores these prototypes in Prototypes/Maps.
         /// </summary>
         public static readonly CVarDef<string>
-            GameMap = CVarDef.Create("game.map", "Frontier", CVar.SERVERONLY); // Frontier: string.Empty<Frontier
+            GameMap = CVarDef.Create("game.map", "PSDefaultGameMap", CVar.SERVERONLY); // Prospect
 
         /// <summary>
         ///     Controls whether to use world persistence or not.

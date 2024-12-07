@@ -1,0 +1,18 @@
+﻿- type: entity
+  id: PSStandardStation
+  parent:
+  - BaseStation
+  - BaseStationCargo
+  - BaseStationJobsSpawning
+  - BaseStationRecords
+  - BaseStationAlertLevels
+  - BaseStationSiliconLawFrontierStation
+  - BaseStationSectorNews
+  - BaseStationMail
+  - BaseStationSectorServices # Hosts all sector-wide services
+  - BaseStationDampening
+  - BaseStationDeadDropHintExempt # Prevents dead drop faxes from appearing on this station
+  - BaseStationRenameWarpPoints
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Transform
